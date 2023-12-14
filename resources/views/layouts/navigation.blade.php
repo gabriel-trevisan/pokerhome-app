@@ -17,7 +17,7 @@
                     </x-nav-link>
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('torneios')" :active="request()->routeIs('torneios')">
+                    <x-nav-link :href="route('tournaments.index')" :active="request()->routeIs('tournaments')">
                         {{ __('Torneios') }}
                     </x-nav-link>
                 </div>
