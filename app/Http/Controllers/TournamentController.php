@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\TournamentsDataTable;
+use App\Models\Structure;
 use App\Models\Tournament;
 use Illuminate\Http\Request;
 
@@ -25,7 +26,11 @@ class TournamentController extends Controller
      */
     public function create()
     {
-        return view("tournament.create");
+        $structures = Structure::all();
+
+        return view("tournament.create", [ 
+           "structures" => $structures
+        ]);
     }
 
     /**

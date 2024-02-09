@@ -4,15 +4,15 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            
+
             @if(session('success'))
-                <x-alert type="success" :message="session('success')"/>
+            <x-alert type="success" :message="session('success')" />
             @endif
-            
+
             @if(session('error'))
-                <x-alert type="error" :message="session('error')"/>
+            <x-alert type="error" :message="session('error')" />
             @endif
-                    
+
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     {{ __('Adicionar torneios') }}
@@ -24,19 +24,65 @@
                 <div class="card-body">
                     <form method="post" action="{{ route('tournaments.store') }}">
                         @csrf
-                        <div class="mb-3">
-                            <label for="tournament" class="form-label">Nome do torneio</label>
-                            <input type="text" class="form-control" id="tournament" name="tournament" required>
+                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="pills-inicial-tab" data-bs-toggle="pill" data-bs-target="#pills-inicial" type="button" role="tab" aria-controls="pills-inicial" aria-selected="true">Inicial</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-structure-tab" data-bs-toggle="pill" data-bs-target="#pills-structure" type="button" role="tab" aria-controls="pills-structure" aria-selected="false">Estrutura</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-finish-tab" data-bs-toggle="pill" data-bs-target="#pills-finish" type="button" role="tab" aria-controls="pills-finish" aria-selected="false">Finalizar</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-inicial" role="tabpanel" aria-labelledby="pills-inicial-tab">
+
+                                <div class="mb-3">
+                                    <label for="tournament" class="form-label">Nome do torneio</label>
+                                    <input type="text" class="form-control" id="tournament" name="tournament" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="date" class="form-label">Data do torneio</label>
+                                    <input type="date" class="form-control" id="date" name="date" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="hour" class="form-label">Hora do torneio</label>
+                                    <input type="time" class="form-control" id="hour" name="hour" required>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="pills-structure" role="tabpanel" aria-labelledby="pills-structure-tab">
+                                @foreach ($structures as $structure)
+                                    <div class="card mb-2">
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input 
+                                                    class="form-check-input" 
+                                                    type="checkbox" 
+                                                    value="{{ $structure->id }}" 
+                                                    id="checkbox-{{ $structure->id }}"
+                                                    name="structure[{{ $structure->id }}]['id']"
+                                                >
+                                                <label class="form-check-label" for="checkbox-{{ $structure->id }}">
+                                                    {{ $structure->name }}
+                                                </label>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label for="valueStructure" class="form-label">Valor</label>
+                                                <input 
+                                                    type="number" 
+                                                    class="form-control" 
+                                                    name="structure[{{ $structure->id }}]['value']"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="tab-pane fade" id="pills-finish" role="tabpanel" aria-labelledby="pills-finish-tab">
+                                <button type="submit" class="btn btn-primary">Criar torneio</button>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="date" class="form-label">Data do torneio</label>
-                            <input type="date" class="form-control" id="date" name="date" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="hour" class="form-label">Hora do torneio</label>
-                            <input type="time" class="form-control" id="hour" name="hour" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
             </div>
