@@ -67,12 +67,13 @@
                                                     {{ $structure->name }}
                                                 </label>
                                             </div>
-                                            <div class="mb-2">
-                                                <label for="valueStructure" class="form-label">Valor</label>
+                                            <div class="mb-2 containerValueStructure d-none">
+                                                <label for="valueStructure-{{ $structure->id }}" class="form-label">Valor</label>
                                                 <input 
                                                     type="number" 
                                                     class="form-control" 
                                                     name="structure[{{ $structure->id }}]['value']"
+                                                    id="valueStructure-{{ $structure->id }}"
                                                 >
                                             </div>
                                         </div>
@@ -80,6 +81,22 @@
                                 @endforeach
                             </div>
                             <div class="tab-pane fade" id="pills-finish" role="tabpanel" aria-labelledby="pills-finish-tab">
+                                <div class="row mb-3">
+                                    <span class="col-sm-2 col-form-label fw-bold">Nome do torneio</span>
+                                    <span class="col-sm-2 col-form-label" id="review-tournament"></span>
+                                </div>
+                                <div class="row mb-3">
+                                    <span class="col-sm-2 col-form-label fw-bold">Data do torneio</span>
+                                    <span class="col-sm-2 col-form-label" id="review-date"></span>
+                                </div>
+                                <div class="row mb-3">
+                                    <span class="col-sm-2 col-form-label fw-bold">Hora do torneio</span>
+                                    <span class="col-sm-2 col-form-label" id="review-hour"></span>
+                                </div>
+                                <div class="row mb-3">
+                                    <span class="col-sm-2 col-form-label fw-bold">Estruturas</span>
+                                    <span class="col-sm-2 col-form-label" id="review-structure"></span>
+                                </div>
                                 <button type="submit" class="btn btn-primary">Criar torneio</button>
                             </div>
                         </div>
@@ -90,3 +107,27 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+    <script type="module">
+        $('#tournament').on('input', function() {
+            $('#review-tournament').text($('#tournament').val());
+        });
+
+        $('#date').change(function() {
+            $('#review-date').text($('#date').val());
+        });
+
+        $('#hour').change(function() {
+            $('#review-hour').text($('#hour').val());
+        });
+
+        $(".form-check-input").change(function() {
+            if (this.checked) {
+                $(this).parent().siblings('.containerValueStructure').removeClass('d-none')
+            } else {
+                $(this).parent().siblings('.containerValueStructure').addClass('d-none')
+            }
+        });
+    </script>
+@endpush
