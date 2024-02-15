@@ -23,7 +23,11 @@ class TournamentsDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', 'tournaments.action')
+            ->addColumn('action', function($row) {
+                $id = $row->id;
+
+                return "<a href='/tournaments/$id' type='button' class='btn btn-primary'>Visualizar</button>";
+            })
             ->setRowId('id');
     }
 

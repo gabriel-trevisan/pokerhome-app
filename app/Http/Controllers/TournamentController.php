@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\TournamentsDataTable;
+use App\Models\Player;
 use App\Models\Structure;
 use App\Models\Tournament;
 use App\Models\TournamentStructure;
@@ -91,7 +92,21 @@ class TournamentController extends Controller
      */
     public function show($id)
     {
-        //
+        $tournament = Tournament::where('id', $id)->first();
+
+        $structures = DB::table('tournament_structures')
+                            ->join('structures', 'structures.id', '=', 'tournament_structures.structure_id')
+                            ->select('structures.id', 'structures.name', 'tournament_structures.value')
+                            ->where('tournament_id', $id)
+                            ->get();
+
+        $players = Player::all();
+
+        return view("tournament.show", [ 
+            "structures" => $structures,
+            "tournament" => $tournament,
+            "players" => $players
+         ]);
     }
 
     /**
