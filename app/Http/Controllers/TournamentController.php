@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\DataTables\TournamentsDataTable;
 use App\Models\Structure;
 use App\Models\Tournament;
+use App\Models\TournamentStructure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TournamentController extends Controller
 {
@@ -44,20 +46,36 @@ class TournamentController extends Controller
         $name = trim($request->input("tournament"));
         $date = trim($request->input("date"));
         $hour = trim($request->input("hour"));
+        $structures = $request->input("structure");
 
+        DB::beginTransaction();
+        
         try {
+
             $tournament = Tournament::create([
                 "name" => $name,
                 "date" => $date,
                 "hour" => $hour
             ]);
 
+            foreach ($structures as $structure) {
+                TournamentStructure::create([
+                    "tournament_id" => $tournament->id,
+                    "structure_id" => $structure['id'],
+                    "value" => $structure['value']
+                ]);
+            }
+
             $message = "O torneio '$tournament->name' foi inserida com sucesso!";
             $typeMessage = "success";
+
+            DB::commit();
 
         } catch (\Throwable $th) {
             $typeMessage = "error";
             $message = $th->getMessage();
+
+            DB::rollBack();
         }
 
         return redirect()->route("tournaments.create")->with(

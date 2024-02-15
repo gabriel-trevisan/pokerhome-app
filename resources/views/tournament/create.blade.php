@@ -61,7 +61,7 @@
                                                     type="checkbox" 
                                                     value="{{ $structure->id }}" 
                                                     id="checkbox-{{ $structure->id }}"
-                                                    name="structure[{{ $structure->id }}]['id']"
+                                                    name="structure[{{ $structure->id }}][id]"
                                                 >
                                                 <label class="form-check-label" for="checkbox-{{ $structure->id }}">
                                                     {{ $structure->name }}
@@ -72,7 +72,7 @@
                                                 <input 
                                                     type="number" 
                                                     class="form-control" 
-                                                    name="structure[{{ $structure->id }}]['value']"
+                                                    name="structure[{{ $structure->id }}][value]"
                                                     id="valueStructure-{{ $structure->id }}"
                                                 >
                                             </div>
