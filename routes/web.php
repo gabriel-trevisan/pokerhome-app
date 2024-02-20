@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\StructureController;
 use App\Http\Controllers\TournamentController;
+use App\Http\Controllers\TournamentPlayerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,3 +27,5 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::resource('structures', StructureController::class);
 Route::resource('tournaments', TournamentController::class);
+Route::resource('tournaments.players', TournamentPlayerController::class)->shallow();
+Route::resource('players', PlayerController::class);

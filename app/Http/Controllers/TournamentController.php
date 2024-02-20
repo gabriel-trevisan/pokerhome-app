@@ -100,12 +100,23 @@ class TournamentController extends Controller
                             ->where('tournament_id', $id)
                             ->get();
 
-        $players = Player::all();
+        $playersNotSelected = DB::table('players')
+                        ->select('players.id', 'players.name')
+                        ->leftJoin('tournament_players', 'tournament_players.player_id', '=', 'players.id')
+                        ->whereNull('tournament_players.tournament_id')
+                        ->get();
+        
+        $playersSelected = DB::table('players')
+                        ->select('players.id', 'players.name')
+                        ->leftJoin('tournament_players', 'tournament_players.player_id', '=', 'players.id')
+                        ->whereNotNull('tournament_players.tournament_id')
+                        ->get();
 
-        return view("tournament.show", [ 
+        return view("tournament.show", [
             "structures" => $structures,
             "tournament" => $tournament,
-            "players" => $players
+            "playersNotSelected" => $playersNotSelected,
+            "playersSelected" => $playersSelected
          ]);
     }
 
