@@ -106,11 +106,11 @@
                                 <div class="row mb-3">
                                     <div class="row mb-3">
                                         <span class="col-sm-2 col-form-label fw-bold">Premiação total</span>
-                                        <span class="col-sm-2 col-form-label" id="total-prize-pool">0,00</span>
+                                        <span class="col-sm-2 col-form-label" id="total-prize-pool">{{$result->total}}</span>
                                     </div>
                                     <div class="row mb-3">
                                         <span class="col-sm-2 col-form-label fw-bold">Total jogadores</span>
-                                        <span class="col-sm-2 col-form-label" id="total-count-players">0</span>
+                                        <span class="col-sm-2 col-form-label" id="total-count-players">{{count($playersSelected)}}</span>
                                     </div>
                                 </div>
                             </div>

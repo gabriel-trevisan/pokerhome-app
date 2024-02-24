@@ -113,12 +113,26 @@ class TournamentController extends Controller
                         ->whereNotNull('tournament_players.tournament_id')
                         ->where('tournament_id', $id)
                         ->get();
+        
+        DB::enableQueryLog();
+                        
+        $result = DB::table('tournaments')
+                    ->selectRaw(
+                        'tournaments.id,
+                        IFNULL(sum(tournament_structures.value), 0) as total'
+                    )
+                    ->leftJoin('tournament_transactions', 'tournament_transactions.tournament_id', '=', 'tournaments.id')
+                    ->leftJoin('tournament_structures', 'tournament_structures.id', '=', 'tournament_transactions.tournament_structure_id')
+                        ->where('tournaments.id', $id)
+                        ->groupBy('tournaments.id')
+                        ->first();
 
         return view("tournament.show", [
             "structures" => $structures,
             "tournament" => $tournament,
             "playersNotSelected" => $playersNotSelected,
-            "playersSelected" => $playersSelected
+            "playersSelected" => $playersSelected,
+            "result" => $result
          ]);
     }
 
