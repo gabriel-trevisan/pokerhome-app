@@ -83,6 +83,7 @@
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#select-players">Selecionar jogadores para o torneio</a></li>
                                         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#create-players-modal">Criar novo cadastro</a></li>
+                                        <li><a class="dropdown-item" href="{{route('tournaments.transactions.index', $tournament->id)}}">Imprimir todas transações</a></li>
                                     </ul>
                                 </div>
 
@@ -204,7 +205,15 @@
                                     <div class="card-body">
                                         <div class="mb-3">
                                             <label for="cashStructure-{{ $structure->id }}" class="form-label">{{$structure->name}}</label>
-                                            <input type="number" class="form-control input-structure-cash" min="1" max="1" step="1" id="cashStructure-{{ $structure->id }}" name="structure-{{ $structure->id }}">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <button class="btn btn-outline-danger minusBtn" type="button">-</button>
+                                                </div>
+                                                <input type="number" class="form-control input-structure-cash" value="0" id="cashStructure-{{ $structure->id }}" name="structure-{{ $structure->id }}" disabled>
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-success plusBtn" type="button">+</button>
+                                                </div>
+                                            </div>
                                             <div class="form-text">Informe a quantidade</div>
                                         </div>
                                     </div>
@@ -234,6 +243,28 @@
 
 @push('scripts')
 <script type="module">
+
+    $(document).ready(function(){
+        $('.plusBtn').click(function(){
+            let input = $(this).closest('.input-group').find('.input-structure-cash');
+            let value = parseInt(input.val());
+            
+            if(value >= 1){
+                return;
+            }
+
+            input.val(value + 1);
+        });
+
+        $('.minusBtn').click(function(){
+            let input = $(this).closest('.input-group').find('.input-structure-cash');
+            let value = parseInt(input.val());
+            
+            if(value > 0){
+                input.val(value - 1);
+            }
+        });
+    });
 
     $.ajaxSetup({
         headers: {
