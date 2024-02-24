@@ -103,8 +103,14 @@
                             </div>
                             <div class="tab-pane fade" id="pills-result" role="tabpanel" aria-labelledby="pills-result-tab">
                                 <div class="row mb-3">
-                                    <span class="col-sm-2 col-form-label fw-bold">Resultado</span>
-                                    <span class="col-sm-2 col-form-label" id="review-tournament">TESTE</span>
+                                    <div class="row mb-3">
+                                        <span class="col-sm-2 col-form-label fw-bold">Premiação total</span>
+                                        <span class="col-sm-2 col-form-label" id="total-prize-pool">0,00</span>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <span class="col-sm-2 col-form-label fw-bold">Total jogadores</span>
+                                        <span class="col-sm-2 col-form-label" id="total-count-players">0</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -197,8 +203,8 @@
                                 <div class="card mb-2">
                                     <div class="card-body">
                                         <div class="mb-3">
-                                            <label for="cashStrcuture-{{ $structure->id }}" class="form-label">{{$structure->name}}</label>
-                                            <input type="number" class="form-control" min="1" max="1" step="1" id="cashStrcuture-{{ $structure->id }}" name="structure[{{ $structure->id }}][value]">
+                                            <label for="cashStructure-{{ $structure->id }}" class="form-label">{{$structure->name}}</label>
+                                            <input type="number" class="form-control input-structure-cash" min="1" max="1" step="1" id="cashStructure-{{ $structure->id }}" name="structure-{{ $structure->id }}">
                                             <div class="form-text">Informe a quantidade</div>
                                         </div>
                                     </div>
@@ -209,8 +215,8 @@
 
                         <div class="tab-pane fade" id="pills-historic" role="tabpanel" aria-labelledby="pills-historic-tab">
                             <div class="row mb-3">
-                                <span class="col-sm-2 col-form-label fw-bold">Resultado</span>
-                                <span class="col-sm-2 col-form-label" id="review-tournament">TESTE</span>
+                                <span class="col-sm-2 col-form-label fw-bold">Registros</span>
+                                <div id="historic-player"></div>
                             </div>
                         </div>
                     </div>
@@ -218,7 +224,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-primary" id="btn-select-player">Confirmar</button>
+                    <button type="button" class="btn btn-primary" id="btn-confirm-cash">Confirmar</button>
                 </div>
             </div>
         </div>
@@ -289,10 +295,91 @@
         let playerElements = this.parentNode.children;
         let inputId = playerElements[0];
         let pName = playerElements[1];
+        let total = 0;
 
         $("#cash-id-player").val($(inputId).val());
         $("#cash-player-name").text($(pName).text());
 
+        let idPlayer = $("#cash-id-player").val();
+        let url = "{{route('tournaments.players.transactions.store', [$tournament->id, ':idPlayer'])}}";
+        
+        url = url.replace(':idPlayer', idPlayer);
+
+        $.ajax({
+            method: "GET",
+            url: url
+        }).done(function(data){
+            
+            let table = '<table class="table">';
+            table +=   '<thead>';
+            table +=   '    <tr>';
+            table +=   '       <th scope="col">#</th>';
+            table +=   '       <th scope="col">Nome</th>';
+            table +=   '       <th scope="col">Quantidade</th>';
+            table +=   '       <th scope="col">Valor</th>';
+            table +=   '    </tr>'
+            table +=   '</thead>'
+            table +=   '<tbody>'
+            
+            data.transactions.forEach(function(transaction){
+                table += '<tr>';
+                table +=     '<th scope="row">'+transaction.id+'</th>';
+                table +=     '<td>'+transaction.name+'</td>';
+                table +=     '<td>'+transaction.quantity+'</td>';
+                table +=    '<td>'+transaction.value+'</td>';
+                table += '</tr>';
+
+                total += transaction.value;
+            });
+
+            table +=   '<tr>'
+            table +=       '<th scope="row"></th>'
+            table +=       '<td></td>'
+            table +=       '<td>Total</td>'
+            table +=       '<td>'+total+'</td>'
+            table +=   '</tr>'
+
+            table +=   '</tbody>';
+            table += '</table>';
+
+            $("#historic-player").html(table);
+            
+        }).fail(function(msg){
+            alert("Ocorreu um erro ao trazer as transações!");
+        });
+    });
+
+    $("#btn-confirm-cash").click(function(){
+        let idPlayer = $("#cash-id-player").val();
+        let transactions = [];
+        let url = "{{route('tournaments.players.transactions.store', [$tournament->id, ':idPlayer'])}}";
+        
+        url = url.replace(':idPlayer', idPlayer);
+        
+        $(".input-structure-cash").each(function(){
+            if ($(this).val() != 0) {
+                transactions.push({
+                    'id': $(this).attr('name').replace('structure-', ''),
+                    'quantity': $(this).val()
+                });
+            }
+        });
+
+        if (transactions.length == 0) {
+            alert("Digite ao menos uma estrutura!");
+            return;
+        }
+
+        $.ajax({
+            method: "POST",
+            url: url,
+            data: { transactions }
+        }).done(function(msg){
+            alert("Transação incluída com sucesso!");
+            location.reload();
+        }).fail(function(msg){
+            alert("Ocorreu um erro: " + msg.responseJSON.message);
+        });
     });
 </script>
 @endpush

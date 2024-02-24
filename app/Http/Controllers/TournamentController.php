@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\TournamentsDataTable;
-use App\Models\Player;
 use App\Models\Structure;
 use App\Models\Tournament;
 use App\Models\TournamentStructure;
@@ -60,11 +59,13 @@ class TournamentController extends Controller
             ]);
 
             foreach ($structures as $structure) {
-                TournamentStructure::create([
-                    "tournament_id" => $tournament->id,
-                    "structure_id" => $structure['id'],
-                    "value" => $structure['value']
-                ]);
+                if (isset($structure['id'])) {
+                    TournamentStructure::create([
+                        "tournament_id" => $tournament->id,
+                        "structure_id" => $structure['id'],
+                        "value" => $structure['value']
+                    ]);
+                }
             }
 
             $message = "O torneio '$tournament->name' foi inserida com sucesso!";
@@ -96,20 +97,21 @@ class TournamentController extends Controller
 
         $structures = DB::table('tournament_structures')
                             ->join('structures', 'structures.id', '=', 'tournament_structures.structure_id')
-                            ->select('structures.id', 'structures.name', 'tournament_structures.value')
+                            ->select('tournament_structures.id', 'structures.name', 'tournament_structures.value')
                             ->where('tournament_id', $id)
                             ->get();
 
         $playersNotSelected = DB::table('players')
                         ->select('players.id', 'players.name')
-                        ->leftJoin('tournament_players', 'tournament_players.player_id', '=', 'players.id')
-                        ->whereNull('tournament_players.tournament_id')
+                        // ->leftJoin('tournament_players', 'tournament_players.player_id', '=', 'players.id')
+                        // ->whereNull('tournament_players.tournament_id')
                         ->get();
         
         $playersSelected = DB::table('players')
                         ->select('players.id', 'players.name')
                         ->leftJoin('tournament_players', 'tournament_players.player_id', '=', 'players.id')
                         ->whereNotNull('tournament_players.tournament_id')
+                        ->where('tournament_id', $id)
                         ->get();
 
         return view("tournament.show", [
