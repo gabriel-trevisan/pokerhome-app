@@ -326,13 +326,17 @@
         let playerElements = this.parentNode.children;
         let inputId = playerElements[0];
         let pName = playerElements[1];
-        let total = 0;
 
         $("#cash-id-player").val($(inputId).val());
         $("#cash-player-name").text($(pName).text());
 
+        getHistoricTransactions();
+    });
+
+    function getHistoricTransactions() {
         let idPlayer = $("#cash-id-player").val();
         let url = "{{route('tournaments.players.transactions.store', [$tournament->id, ':idPlayer'])}}";
+        let total = 0;
         
         url = url.replace(':idPlayer', idPlayer);
 
@@ -378,7 +382,7 @@
         }).fail(function(msg){
             alert("Ocorreu um erro ao trazer as transações!");
         });
-    });
+    }
 
     $("#btn-confirm-cash").click(function(){
         let idPlayer = $("#cash-id-player").val();
@@ -407,7 +411,10 @@
             data: { transactions }
         }).done(function(msg){
             alert("Transação incluída com sucesso!");
-            location.reload();
+            getHistoricTransactions();
+            $('.input-structure-cash').each(function() {
+                $(this).val('0');
+            });
         }).fail(function(msg){
             alert("Ocorreu um erro: " + msg.responseJSON.message);
         });
