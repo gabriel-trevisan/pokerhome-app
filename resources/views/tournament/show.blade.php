@@ -150,18 +150,31 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    @foreach ($playersNotSelected as $player)
-                        <div class="card mb-2">
-                            <div class="card-body">
-                                <div class="form-check form-check-select-player">
-                                    <input class="form-check-input" type="checkbox" value="{{ $player->id }}" id="checkbox-{{ $player->id }}" name="player[{{ $player->id }}][id]">
-                                    <label class="form-check-label" for="checkbox-{{ $player->id }}">
-                                        {{ $player->name }}
-                                    </label>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="input-group">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" id="search-select-player" placeholder="Pesquisar...">
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    </div>
+                    <h4>Jogadores</h4>
+                    <div id="select-card-players">
+                        @foreach ($playersNotSelected as $player)
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <div class="form-check form-check-select-player">
+                                        <input class="form-check-input" type="checkbox" value="{{ $player->id }}" id="checkbox-{{ $player->id }}" name="player[{{ $player->id }}][id]">
+                                        <label class="form-check-label" for="checkbox-{{ $player->id }}">
+                                            {{ $player->name }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -419,5 +432,17 @@
             alert("Ocorreu um erro: " + msg.responseJSON.message);
         });
     });
+
+    $("#search-select-player").on("keyup", function() {
+        var searchText = $(this).val().toLowerCase();
+        $("#select-card-players .card").each(function() {
+          var playerText = $(this).text().toLowerCase();
+          if(playerText.indexOf(searchText) === -1) {
+            $(this).hide();
+          } else {
+            $(this).show();
+          }
+        });
+      });
 </script>
 @endpush
