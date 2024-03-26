@@ -42,6 +42,9 @@ Route::resource('tournaments.players.transactions', TournamentPlayerTransactionC
     ->shallow()
     ->middleware(Authenticate::class);
 
+Route::delete('tournaments/{tournament}/players/{player}/transactions/{transaction}', [TournamentPlayerTransactionController::class, 'destroy'])
+    ->name('tournaments.players.transactions.destroy');
+
 Route::resource('tournaments.transactions', TournamentTransactionController::class)
     ->shallow()
     ->middleware(Authenticate::class);

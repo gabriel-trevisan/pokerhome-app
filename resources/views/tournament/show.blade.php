@@ -279,6 +279,25 @@
         });
     });
 
+    $(document).on('click', '.delete-transaction-button', function() {
+        let deleteUrl = "{{ route('tournaments.players.transactions.destroy', [$tournament->id, ':idPlayer',':idTransaction']) }}";
+        let idPlayer = $("#cash-id-player").val();
+        let transactionId = $(this).closest('tr').find('th').text();
+
+        deleteUrl = deleteUrl.replace(':idPlayer', idPlayer);
+        deleteUrl = deleteUrl.replace(':idTransaction', transactionId);
+
+        $.ajax({
+            url: deleteUrl, // corrigido para deleteUrl
+            type: 'DELETE'
+        }).done(function(response){
+            alert("Transação excluída com sucesso!");
+            getHistoricTransactions();
+        }).fail(function(response){
+            alert("Ocorreu um erro: " + response.responseJSON.message);
+        });
+    });
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -348,7 +367,7 @@
 
     function getHistoricTransactions() {
         let idPlayer = $("#cash-id-player").val();
-        let url = "{{route('tournaments.players.transactions.store', [$tournament->id, ':idPlayer'])}}";
+        let url = "{{route('tournaments.players.transactions.index', [$tournament->id, ':idPlayer'])}}";
         let total = 0;
         
         url = url.replace(':idPlayer', idPlayer);
@@ -357,14 +376,16 @@
             method: "GET",
             url: url
         }).done(function(data){
-            
+
             let table = '<table class="table">';
+
             table +=   '<thead>';
             table +=   '    <tr>';
             table +=   '       <th scope="col">#</th>';
             table +=   '       <th scope="col">Nome</th>';
             table +=   '       <th scope="col">Quantidade</th>';
             table +=   '       <th scope="col">Valor</th>';
+            table +=   '       <th scope="col">Ação</th>';
             table +=   '    </tr>'
             table +=   '</thead>'
             table +=   '<tbody>'
@@ -374,7 +395,12 @@
                 table +=     '<th scope="row">'+transaction.id+'</th>';
                 table +=     '<td>'+transaction.name+'</td>';
                 table +=     '<td>'+transaction.quantity+'</td>';
-                table +=    '<td>'+transaction.value+'</td>';
+                table +=     '<td>'+transaction.value+'</td>';
+                table +=     '<td>'
+                table +=        '<button type="button" class="btn btn-danger delete-transaction-button">'
+                table +=        '<i class="bi bi-trash-fill"></i>'
+                table +=        '</button>'
+                table +=     '<td>'  
                 table += '</tr>';
 
                 total += transaction.value;
@@ -443,6 +469,6 @@
             $(this).show();
           }
         });
-      });
+    });
 </script>
 @endpush

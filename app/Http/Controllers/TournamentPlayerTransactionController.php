@@ -19,7 +19,7 @@ class TournamentPlayerTransactionController extends Controller
         if ($request->ajax()) {
             $transactions = DB::table('tournament_transactions')
                                 ->select(
-                                    'tournament_structures.id', 
+                                    'tournament_transactions.id', 
                                     'structures.name', 
                                     'tournament_transactions.quantity', 
                                     'tournament_structures.value'
@@ -67,6 +67,34 @@ class TournamentPlayerTransactionController extends Controller
                     "msg" => "successo"
                 ]);
 
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                return response()->json(["msg" => $th->getMessage()], 500); 
+            }
+        }
+    }
+
+    /**
+     * Delete transaction
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request, int $idTournament,  int $idPlayer, int $idTransaction)
+    {
+        if ($request->ajax()) {
+            DB::beginTransaction();
+
+            try {
+                $transaction = TournamentTransaction::find($idTransaction);
+                $transaction->delete();
+
+                DB::commit();
+
+                return response()->json([
+                    "msg" => "successo"
+                ]);
             } catch (\Throwable $th) {
                 DB::rollBack();
 
